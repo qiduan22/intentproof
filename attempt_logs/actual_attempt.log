@@ -1,0 +1,2 @@
+FULL-RTL VERIFICATION NOT RUN: missing required tools; see preflight.json
+Preflight {'tools': {'git': '/usr/bin/git', 'yosys': None, 'sby': None, 'z3': None}, 'required_available': False, 'runtime': 'upstream benchmark', 'execution_mode': 'run'}

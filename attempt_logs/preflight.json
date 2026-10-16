@@ -1,0 +1,11 @@
+{
+  "tools": {
+    "git": "/usr/bin/git",
+    "yosys": null,
+    "sby": null,
+    "z3": null
+  },
+  "required_available": false,
+  "runtime": "upstream benchmark",
+  "execution_mode": "run"
+}

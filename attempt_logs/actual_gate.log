@@ -1,0 +1,7 @@
+{
+  "accepted": false,
+  "errors": [
+    "Missing measured benchmark_results.json"
+  ],
+  "tasks": 0
+}
