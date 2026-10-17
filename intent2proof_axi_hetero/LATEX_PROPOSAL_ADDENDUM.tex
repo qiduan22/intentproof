@@ -1,0 +1,42 @@
+% Intent2Proof heterogeneous AXI-Lite experiment addendum.
+% Local only; do not describe as a completed upstream full-RTL proof.
+\subsection{Heterogeneous AXI-Lite integration: preliminary architectural evaluation}
+We next examined a two-master, two-slave read-only AXI-Lite system with
+arbiter selection, destination routing, response backpressure and a shutdown
+controller. The full-RTL study targets the open-source \texttt{axil\_interconnect}
+from the \texttt{verilog-axi} project, together with its arbitration dependencies
+and locally authored slave controllers. The present executed results are from
+an independently constructed protocol-level transition system, not from an
+elaborated RTL model.
+
+For each master $i\in\{0,1\}$, the monitor credit is incremented on
+$\mathrm{ARVALID}_i\land\mathrm{ARREADY}_i$ and decremented on
+$\mathrm{RVALID}_i\land\mathrm{RREADY}_i$. The global intent requires
+that reconfiguration never start with an outstanding credit or a pending
+read address. The model exercises both response backpressure and limited
+slave latency nondeterminism. At waiting bounds $1,2,3,4$, exhaustive
+exploration reached $90,114,138,162$ distinct states respectively, and found
+no violation in the correct model. A mutation omitting master~1 from the
+shutdown guard had a two-transition counterexample for all four settings.
+A second mutation that misroutes a response reached a counterexample after
+three transitions. Five native-Z3 one-step contract checks returned the
+expected four consistency/negative-control outcomes: three UNSAT and two SAT.
+
+\begin{figure}[t]\centering
+\includegraphics[width=.78\linewidth]{fig1_reachable_arch_states.png}
+\caption{Reachable states in the executed, purpose-built AXI protocol model
+under alternative slave waiting bounds. This is not a state-space or speedup
+measurement from the upstream RTL.}\label{fig:axi_arch_states}
+\end{figure}
+\begin{figure}[t]\centering
+\includegraphics[width=.78\linewidth]{fig2_arch_fault_witnesses.png}
+\caption{Shortest architectural-model counterexamples for erroneous
+shutdown and cross-master response routing.}\label{fig:axi_arch_mutants}
+\end{figure}
+
+For the pending upstream-RTL comparison, the supplied GitHub Actions
+harness prepares 12 SymbiYosys tasks: full RTL, standard COI, candidate
+interface summary, two mutants and non-vacuity coverage in two address
+configurations. The summary is not yet proved to overapproximate the upstream
+interconnect; no claim of solver speedup, full trace inclusion, or upstream
+RTL proof follows from these local results.

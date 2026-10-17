@@ -1,0 +1,6 @@
+obligation,expected,status,seconds
+scoreboard_inductive,unsat,unsat,0.0028383700000631507
+no_orphan_response,unsat,unsat,0.0017822870004238212
+correct_shutdown,unsat,unsat,0.0009639939999033231
+mutant_shutdown,sat,sat,0.0013349219998417539
+mutant_response_owner,sat,sat,0.0011911860001418972

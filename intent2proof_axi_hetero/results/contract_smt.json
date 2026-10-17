@@ -1,0 +1,35 @@
+{
+  "scope": "one-step abstract contracts, not original RTL",
+  "results": [
+    {
+      "obligation": "scoreboard_inductive",
+      "expected": "unsat",
+      "status": "unsat",
+      "seconds": 0.0028383700000631507
+    },
+    {
+      "obligation": "no_orphan_response",
+      "expected": "unsat",
+      "status": "unsat",
+      "seconds": 0.0017822870004238212
+    },
+    {
+      "obligation": "correct_shutdown",
+      "expected": "unsat",
+      "status": "unsat",
+      "seconds": 0.0009639939999033231
+    },
+    {
+      "obligation": "mutant_shutdown",
+      "expected": "sat",
+      "status": "sat",
+      "seconds": 0.0013349219998417539
+    },
+    {
+      "obligation": "mutant_response_owner",
+      "expected": "sat",
+      "status": "sat",
+      "seconds": 0.0011911860001418972
+    }
+  ]
+}

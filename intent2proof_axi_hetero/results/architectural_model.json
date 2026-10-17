@@ -1,0 +1,645 @@
+{
+  "scope": "purpose-built protocol-level transition model, NOT original RTL",
+  "results": [
+    {
+      "wait_limit": 1,
+      "variant": "none",
+      "reachable_states": 90,
+      "verdict": "EXHAUSTIVE_SAFE",
+      "witness": null,
+      "cover": {
+        "simultaneous_requests": true,
+        "slave0_response": true,
+        "slave1_response": true,
+        "backpressure": true,
+        "shutdown_with_outstanding": true,
+        "safe_reconfig": true
+      }
+    },
+    {
+      "wait_limit": 1,
+      "variant": "ignore_master1",
+      "reachable_states_before_witness": 13,
+      "verdict": "VIOLATED",
+      "witness": {
+        "reason": [
+          "reconfiguration_with_outstanding_or_pending_request"
+        ],
+        "transitions": 2,
+        "trace": [
+          {
+            "event": "master1_request_slave0,AR_accept_master1_slave0",
+            "state": {
+              "req0": 0,
+              "req1": 0,
+              "turn": 0,
+              "phase": 1,
+              "owner": 1,
+              "dest": 0,
+              "wait": 0,
+              "shutdown": 0,
+              "mon0": 0,
+              "mon1": 1,
+              "dut_busy0": 0,
+              "dut_busy1": 1,
+              "reconfig": 0
+            },
+            "violation": []
+          },
+          {
+            "event": "shutdown_request,slave_delay,reconfiguration_start",
+            "state": {
+              "req0": 0,
+              "req1": 0,
+              "turn": 0,
+              "phase": 1,
+              "owner": 1,
+              "dest": 0,
+              "wait": 1,
+              "shutdown": 1,
+              "mon0": 0,
+              "mon1": 1,
+              "dut_busy0": 0,
+              "dut_busy1": 1,
+              "reconfig": 1
+            },
+            "violation": [
+              "reconfiguration_with_outstanding_or_pending_request"
+            ]
+          }
+        ]
+      },
+      "cover": {
+        "simultaneous_requests": true,
+        "slave0_response": false,
+        "slave1_response": false,
+        "backpressure": false,
+        "shutdown_with_outstanding": false,
+        "safe_reconfig": true
+      }
+    },
+    {
+      "wait_limit": 1,
+      "variant": "wrong_owner",
+      "reachable_states_before_witness": 51,
+      "verdict": "VIOLATED",
+      "witness": {
+        "reason": [
+          "response_without_matching_accepted_address",
+          "DUT_busy_disagrees_with_independent_monitor"
+        ],
+        "transitions": 3,
+        "trace": [
+          {
+            "event": "master1_request_slave0,AR_accept_master1_slave0",
+            "state": {
+              "req0": 0,
+              "req1": 0,
+              "turn": 0,
+              "phase": 1,
+              "owner": 1,
+              "dest": 0,
+              "wait": 0,
+              "shutdown": 0,
+              "mon0": 0,
+              "mon1": 1,
+              "dut_busy0": 0,
+              "dut_busy1": 1,
+              "reconfig": 0
+            },
+            "violation": []
+          },
+          {
+            "event": "slave0_RVALID",
+            "state": {
+              "req0": 0,
+              "req1": 0,
+              "turn": 0,
+              "phase": 2,
+              "owner": 1,
+              "dest": 0,
+              "wait": 0,
+              "shutdown": 0,
+              "mon0": 0,
+              "mon1": 1,
+              "dut_busy0": 0,
+              "dut_busy1": 1,
+              "reconfig": 0
+            },
+            "violation": []
+          },
+          {
+            "event": "R_complete_to_master0",
+            "state": {
+              "req0": 0,
+              "req1": 0,
+              "turn": 0,
+              "phase": 0,
+              "owner": 1,
+              "dest": 0,
+              "wait": 0,
+              "shutdown": 0,
+              "mon0": -1,
+              "mon1": 1,
+              "dut_busy0": 0,
+              "dut_busy1": 0,
+              "reconfig": 0
+            },
+            "violation": [
+              "response_without_matching_accepted_address",
+              "DUT_busy_disagrees_with_independent_monitor"
+            ]
+          }
+        ]
+      },
+      "cover": {
+        "simultaneous_requests": true,
+        "slave0_response": true,
+        "slave1_response": false,
+        "backpressure": true,
+        "shutdown_with_outstanding": false,
+        "safe_reconfig": true
+      }
+    },
+    {
+      "wait_limit": 2,
+      "variant": "none",
+      "reachable_states": 114,
+      "verdict": "EXHAUSTIVE_SAFE",
+      "witness": null,
+      "cover": {
+        "simultaneous_requests": true,
+        "slave0_response": true,
+        "slave1_response": true,
+        "backpressure": true,
+        "shutdown_with_outstanding": true,
+        "safe_reconfig": true
+      }
+    },
+    {
+      "wait_limit": 2,
+      "variant": "ignore_master1",
+      "reachable_states_before_witness": 13,
+      "verdict": "VIOLATED",
+      "witness": {
+        "reason": [
+          "reconfiguration_with_outstanding_or_pending_request"
+        ],
+        "transitions": 2,
+        "trace": [
+          {
+            "event": "master1_request_slave0,AR_accept_master1_slave0",
+            "state": {
+              "req0": 0,
+              "req1": 0,
+              "turn": 0,
+              "phase": 1,
+              "owner": 1,
+              "dest": 0,
+              "wait": 0,
+              "shutdown": 0,
+              "mon0": 0,
+              "mon1": 1,
+              "dut_busy0": 0,
+              "dut_busy1": 1,
+              "reconfig": 0
+            },
+            "violation": []
+          },
+          {
+            "event": "shutdown_request,slave_delay,reconfiguration_start",
+            "state": {
+              "req0": 0,
+              "req1": 0,
+              "turn": 0,
+              "phase": 1,
+              "owner": 1,
+              "dest": 0,
+              "wait": 1,
+              "shutdown": 1,
+              "mon0": 0,
+              "mon1": 1,
+              "dut_busy0": 0,
+              "dut_busy1": 1,
+              "reconfig": 1
+            },
+            "violation": [
+              "reconfiguration_with_outstanding_or_pending_request"
+            ]
+          }
+        ]
+      },
+      "cover": {
+        "simultaneous_requests": true,
+        "slave0_response": false,
+        "slave1_response": false,
+        "backpressure": false,
+        "shutdown_with_outstanding": false,
+        "safe_reconfig": true
+      }
+    },
+    {
+      "wait_limit": 2,
+      "variant": "wrong_owner",
+      "reachable_states_before_witness": 55,
+      "verdict": "VIOLATED",
+      "witness": {
+        "reason": [
+          "response_without_matching_accepted_address",
+          "DUT_busy_disagrees_with_independent_monitor"
+        ],
+        "transitions": 3,
+        "trace": [
+          {
+            "event": "master1_request_slave0,AR_accept_master1_slave0",
+            "state": {
+              "req0": 0,
+              "req1": 0,
+              "turn": 0,
+              "phase": 1,
+              "owner": 1,
+              "dest": 0,
+              "wait": 0,
+              "shutdown": 0,
+              "mon0": 0,
+              "mon1": 1,
+              "dut_busy0": 0,
+              "dut_busy1": 1,
+              "reconfig": 0
+            },
+            "violation": []
+          },
+          {
+            "event": "slave0_RVALID",
+            "state": {
+              "req0": 0,
+              "req1": 0,
+              "turn": 0,
+              "phase": 2,
+              "owner": 1,
+              "dest": 0,
+              "wait": 0,
+              "shutdown": 0,
+              "mon0": 0,
+              "mon1": 1,
+              "dut_busy0": 0,
+              "dut_busy1": 1,
+              "reconfig": 0
+            },
+            "violation": []
+          },
+          {
+            "event": "R_complete_to_master0",
+            "state": {
+              "req0": 0,
+              "req1": 0,
+              "turn": 0,
+              "phase": 0,
+              "owner": 1,
+              "dest": 0,
+              "wait": 0,
+              "shutdown": 0,
+              "mon0": -1,
+              "mon1": 1,
+              "dut_busy0": 0,
+              "dut_busy1": 0,
+              "reconfig": 0
+            },
+            "violation": [
+              "response_without_matching_accepted_address",
+              "DUT_busy_disagrees_with_independent_monitor"
+            ]
+          }
+        ]
+      },
+      "cover": {
+        "simultaneous_requests": true,
+        "slave0_response": true,
+        "slave1_response": false,
+        "backpressure": true,
+        "shutdown_with_outstanding": false,
+        "safe_reconfig": true
+      }
+    },
+    {
+      "wait_limit": 3,
+      "variant": "none",
+      "reachable_states": 138,
+      "verdict": "EXHAUSTIVE_SAFE",
+      "witness": null,
+      "cover": {
+        "simultaneous_requests": true,
+        "slave0_response": true,
+        "slave1_response": true,
+        "backpressure": true,
+        "shutdown_with_outstanding": true,
+        "safe_reconfig": true
+      }
+    },
+    {
+      "wait_limit": 3,
+      "variant": "ignore_master1",
+      "reachable_states_before_witness": 13,
+      "verdict": "VIOLATED",
+      "witness": {
+        "reason": [
+          "reconfiguration_with_outstanding_or_pending_request"
+        ],
+        "transitions": 2,
+        "trace": [
+          {
+            "event": "master1_request_slave0,AR_accept_master1_slave0",
+            "state": {
+              "req0": 0,
+              "req1": 0,
+              "turn": 0,
+              "phase": 1,
+              "owner": 1,
+              "dest": 0,
+              "wait": 0,
+              "shutdown": 0,
+              "mon0": 0,
+              "mon1": 1,
+              "dut_busy0": 0,
+              "dut_busy1": 1,
+              "reconfig": 0
+            },
+            "violation": []
+          },
+          {
+            "event": "shutdown_request,slave_delay,reconfiguration_start",
+            "state": {
+              "req0": 0,
+              "req1": 0,
+              "turn": 0,
+              "phase": 1,
+              "owner": 1,
+              "dest": 0,
+              "wait": 1,
+              "shutdown": 1,
+              "mon0": 0,
+              "mon1": 1,
+              "dut_busy0": 0,
+              "dut_busy1": 1,
+              "reconfig": 1
+            },
+            "violation": [
+              "reconfiguration_with_outstanding_or_pending_request"
+            ]
+          }
+        ]
+      },
+      "cover": {
+        "simultaneous_requests": true,
+        "slave0_response": false,
+        "slave1_response": false,
+        "backpressure": false,
+        "shutdown_with_outstanding": false,
+        "safe_reconfig": true
+      }
+    },
+    {
+      "wait_limit": 3,
+      "variant": "wrong_owner",
+      "reachable_states_before_witness": 55,
+      "verdict": "VIOLATED",
+      "witness": {
+        "reason": [
+          "response_without_matching_accepted_address",
+          "DUT_busy_disagrees_with_independent_monitor"
+        ],
+        "transitions": 3,
+        "trace": [
+          {
+            "event": "master1_request_slave0,AR_accept_master1_slave0",
+            "state": {
+              "req0": 0,
+              "req1": 0,
+              "turn": 0,
+              "phase": 1,
+              "owner": 1,
+              "dest": 0,
+              "wait": 0,
+              "shutdown": 0,
+              "mon0": 0,
+              "mon1": 1,
+              "dut_busy0": 0,
+              "dut_busy1": 1,
+              "reconfig": 0
+            },
+            "violation": []
+          },
+          {
+            "event": "slave0_RVALID",
+            "state": {
+              "req0": 0,
+              "req1": 0,
+              "turn": 0,
+              "phase": 2,
+              "owner": 1,
+              "dest": 0,
+              "wait": 0,
+              "shutdown": 0,
+              "mon0": 0,
+              "mon1": 1,
+              "dut_busy0": 0,
+              "dut_busy1": 1,
+              "reconfig": 0
+            },
+            "violation": []
+          },
+          {
+            "event": "R_complete_to_master0",
+            "state": {
+              "req0": 0,
+              "req1": 0,
+              "turn": 0,
+              "phase": 0,
+              "owner": 1,
+              "dest": 0,
+              "wait": 0,
+              "shutdown": 0,
+              "mon0": -1,
+              "mon1": 1,
+              "dut_busy0": 0,
+              "dut_busy1": 0,
+              "reconfig": 0
+            },
+            "violation": [
+              "response_without_matching_accepted_address",
+              "DUT_busy_disagrees_with_independent_monitor"
+            ]
+          }
+        ]
+      },
+      "cover": {
+        "simultaneous_requests": true,
+        "slave0_response": true,
+        "slave1_response": false,
+        "backpressure": true,
+        "shutdown_with_outstanding": false,
+        "safe_reconfig": true
+      }
+    },
+    {
+      "wait_limit": 4,
+      "variant": "none",
+      "reachable_states": 162,
+      "verdict": "EXHAUSTIVE_SAFE",
+      "witness": null,
+      "cover": {
+        "simultaneous_requests": true,
+        "slave0_response": true,
+        "slave1_response": true,
+        "backpressure": true,
+        "shutdown_with_outstanding": true,
+        "safe_reconfig": true
+      }
+    },
+    {
+      "wait_limit": 4,
+      "variant": "ignore_master1",
+      "reachable_states_before_witness": 13,
+      "verdict": "VIOLATED",
+      "witness": {
+        "reason": [
+          "reconfiguration_with_outstanding_or_pending_request"
+        ],
+        "transitions": 2,
+        "trace": [
+          {
+            "event": "master1_request_slave0,AR_accept_master1_slave0",
+            "state": {
+              "req0": 0,
+              "req1": 0,
+              "turn": 0,
+              "phase": 1,
+              "owner": 1,
+              "dest": 0,
+              "wait": 0,
+              "shutdown": 0,
+              "mon0": 0,
+              "mon1": 1,
+              "dut_busy0": 0,
+              "dut_busy1": 1,
+              "reconfig": 0
+            },
+            "violation": []
+          },
+          {
+            "event": "shutdown_request,slave_delay,reconfiguration_start",
+            "state": {
+              "req0": 0,
+              "req1": 0,
+              "turn": 0,
+              "phase": 1,
+              "owner": 1,
+              "dest": 0,
+              "wait": 1,
+              "shutdown": 1,
+              "mon0": 0,
+              "mon1": 1,
+              "dut_busy0": 0,
+              "dut_busy1": 1,
+              "reconfig": 1
+            },
+            "violation": [
+              "reconfiguration_with_outstanding_or_pending_request"
+            ]
+          }
+        ]
+      },
+      "cover": {
+        "simultaneous_requests": true,
+        "slave0_response": false,
+        "slave1_response": false,
+        "backpressure": false,
+        "shutdown_with_outstanding": false,
+        "safe_reconfig": true
+      }
+    },
+    {
+      "wait_limit": 4,
+      "variant": "wrong_owner",
+      "reachable_states_before_witness": 55,
+      "verdict": "VIOLATED",
+      "witness": {
+        "reason": [
+          "response_without_matching_accepted_address",
+          "DUT_busy_disagrees_with_independent_monitor"
+        ],
+        "transitions": 3,
+        "trace": [
+          {
+            "event": "master1_request_slave0,AR_accept_master1_slave0",
+            "state": {
+              "req0": 0,
+              "req1": 0,
+              "turn": 0,
+              "phase": 1,
+              "owner": 1,
+              "dest": 0,
+              "wait": 0,
+              "shutdown": 0,
+              "mon0": 0,
+              "mon1": 1,
+              "dut_busy0": 0,
+              "dut_busy1": 1,
+              "reconfig": 0
+            },
+            "violation": []
+          },
+          {
+            "event": "slave0_RVALID",
+            "state": {
+              "req0": 0,
+              "req1": 0,
+              "turn": 0,
+              "phase": 2,
+              "owner": 1,
+              "dest": 0,
+              "wait": 0,
+              "shutdown": 0,
+              "mon0": 0,
+              "mon1": 1,
+              "dut_busy0": 0,
+              "dut_busy1": 1,
+              "reconfig": 0
+            },
+            "violation": []
+          },
+          {
+            "event": "R_complete_to_master0",
+            "state": {
+              "req0": 0,
+              "req1": 0,
+              "turn": 0,
+              "phase": 0,
+              "owner": 1,
+              "dest": 0,
+              "wait": 0,
+              "shutdown": 0,
+              "mon0": -1,
+              "mon1": 1,
+              "dut_busy0": 0,
+              "dut_busy1": 0,
+              "reconfig": 0
+            },
+            "violation": [
+              "response_without_matching_accepted_address",
+              "DUT_busy_disagrees_with_independent_monitor"
+            ]
+          }
+        ]
+      },
+      "cover": {
+        "simultaneous_requests": true,
+        "slave0_response": true,
+        "slave1_response": false,
+        "backpressure": true,
+        "shutdown_with_outstanding": false,
+        "safe_reconfig": true
+      }
+    }
+  ]
+}

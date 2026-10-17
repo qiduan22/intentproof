@@ -1,0 +1,13 @@
+wait_limit,variant,verdict,reachable_states,reachable_states_before_witness,witness_depth
+1,none,EXHAUSTIVE_SAFE,90,,
+1,ignore_master1,VIOLATED,,13,2
+1,wrong_owner,VIOLATED,,51,3
+2,none,EXHAUSTIVE_SAFE,114,,
+2,ignore_master1,VIOLATED,,13,2
+2,wrong_owner,VIOLATED,,55,3
+3,none,EXHAUSTIVE_SAFE,138,,
+3,ignore_master1,VIOLATED,,13,2
+3,wrong_owner,VIOLATED,,55,3
+4,none,EXHAUSTIVE_SAFE,162,,
+4,ignore_master1,VIOLATED,,13,2
+4,wrong_owner,VIOLATED,,55,3

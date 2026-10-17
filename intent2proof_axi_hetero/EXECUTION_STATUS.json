@@ -1,0 +1,21 @@
+{
+  "executed": {
+    "architectural_model": {
+      "settings": [1,2,3,4],
+      "correct_reachable_states": [90,114,138,162],
+      "correct_exhaustive_results": 4,
+      "mutant_counterexamples": 8,
+      "typical_shutdown_counterexample_transitions": 2,
+      "typical_response_route_counterexample_transitions": 3
+    },
+    "smt_contract_consistency": {"tasks": 5, "unsat": 3, "sat": 2},
+    "offline_harness_unit_tests": {"passed": 12, "failed": 0}
+  },
+  "not_executed": {
+    "upstream_verilog_axi_sby_tasks": 12,
+    "reason": "Yosys/SymbiYosys executable unavailable and git remote network inaccessible in this runtime",
+    "candidate_contract_trace_inclusion_proved": false,
+    "standard_coi_runtime_speedup_measured": false
+  },
+  "trust_statement": "Do not report upstream RTL proof, a verified abstract refinement, or EDA speedup based on this package alone."
+}
