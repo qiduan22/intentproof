@@ -1,0 +1,1 @@
+Figure 1/2 are measured on source-derived control equations; Figure 3 is a counted theoretical budget from RTL declarations, NOT Yosys/ABC data.

@@ -1,0 +1,27 @@
+{
+  "library": "libz3.so.4",
+  "solver_scope": "source-derived control transition systems (not Yosys RTL proof)",
+  "sample_size": 24,
+  "summary": {
+    "augmented": {
+      "k6_seconds": 0.217983,
+      "k10_statuses": [
+        "unknown"
+      ]
+    },
+    "coi": {
+      "k6_seconds": 0.203591,
+      "k10_statuses": [
+        "unknown"
+      ]
+    },
+    "contract": {
+      "k6_seconds": 0.234472,
+      "k10_statuses": [
+        "unknown"
+      ]
+    }
+  },
+  "unknown_count": 3,
+  "unexpected_outcomes": 0
+}

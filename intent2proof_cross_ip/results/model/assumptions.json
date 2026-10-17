@@ -1,0 +1,9 @@
+{
+  "source_sha": "76a653781f1ecca1c1da92c4e5105ecd5d0f832b13cbfd31300ec88d9947e0c1",
+  "root": "/mnt/data/intent2proof_cross_ip",
+  "sampling": "one synchronous clock step per transition",
+  "reset": "initial reset; asynchronous reset during execution returns to INIT and cannot increase reachability",
+  "input_domain": "arbitrary per-cycle wr_a,wr_b,rd_sink,shutdown_request booleans",
+  "all_explored_inputs": 16,
+  "scope": "control equations transcribed from actual upstream RTL plus authored interconnect; not an elaboration proof"
+}

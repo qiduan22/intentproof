@@ -1,0 +1,101 @@
+{
+  "scope": "contract-level, source-derived control relations + custom arbiter/shutdown equations; not verified against integration RTL yet",
+  "rows": [
+    {
+      "capacity": 4,
+      "obligation": "conservation",
+      "solver_status": "unsat",
+      "expected": "unsat",
+      "seconds": 0.013841,
+      "smt_bytes": 1612
+    },
+    {
+      "capacity": 4,
+      "obligation": "capacity",
+      "solver_status": "unsat",
+      "expected": "unsat",
+      "seconds": 0.00425,
+      "smt_bytes": 1348
+    },
+    {
+      "capacity": 4,
+      "obligation": "shutdown_safe",
+      "solver_status": "unsat",
+      "expected": "unsat",
+      "seconds": 0.000818,
+      "smt_bytes": 633
+    },
+    {
+      "capacity": 4,
+      "obligation": "shutdown_mutant",
+      "solver_status": "sat",
+      "expected": "sat",
+      "seconds": 0.003628,
+      "smt_bytes": 616
+    },
+    {
+      "capacity": 8,
+      "obligation": "conservation",
+      "solver_status": "unsat",
+      "expected": "unsat",
+      "seconds": 0.057859,
+      "smt_bytes": 1612
+    },
+    {
+      "capacity": 8,
+      "obligation": "capacity",
+      "solver_status": "unsat",
+      "expected": "unsat",
+      "seconds": 0.004321,
+      "smt_bytes": 1348
+    },
+    {
+      "capacity": 8,
+      "obligation": "shutdown_safe",
+      "solver_status": "unsat",
+      "expected": "unsat",
+      "seconds": 0.000688,
+      "smt_bytes": 633
+    },
+    {
+      "capacity": 8,
+      "obligation": "shutdown_mutant",
+      "solver_status": "sat",
+      "expected": "sat",
+      "seconds": 0.003362,
+      "smt_bytes": 616
+    },
+    {
+      "capacity": 16,
+      "obligation": "conservation",
+      "solver_status": "unsat",
+      "expected": "unsat",
+      "seconds": 0.144124,
+      "smt_bytes": 1623
+    },
+    {
+      "capacity": 16,
+      "obligation": "capacity",
+      "solver_status": "unsat",
+      "expected": "unsat",
+      "seconds": 0.004991,
+      "smt_bytes": 1360
+    },
+    {
+      "capacity": 16,
+      "obligation": "shutdown_safe",
+      "solver_status": "unsat",
+      "expected": "unsat",
+      "seconds": 0.000683,
+      "smt_bytes": 636
+    },
+    {
+      "capacity": 16,
+      "obligation": "shutdown_mutant",
+      "solver_status": "sat",
+      "expected": "sat",
+      "seconds": 0.003819,
+      "smt_bytes": 619
+    }
+  ]
+}

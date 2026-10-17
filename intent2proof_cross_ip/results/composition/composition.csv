@@ -1,0 +1,13 @@
+capacity,obligation,solver_status,expected,seconds,smt_bytes
+4,conservation,unsat,unsat,0.013841,1612
+4,capacity,unsat,unsat,0.00425,1348
+4,shutdown_safe,unsat,unsat,0.000818,633
+4,shutdown_mutant,sat,sat,0.003628,616
+8,conservation,unsat,unsat,0.057859,1612
+8,capacity,unsat,unsat,0.004321,1348
+8,shutdown_safe,unsat,unsat,0.000688,633
+8,shutdown_mutant,sat,sat,0.003362,616
+16,conservation,unsat,unsat,0.144124,1623
+16,capacity,unsat,unsat,0.004991,1360
+16,shutdown_safe,unsat,unsat,0.000683,636
+16,shutdown_mutant,sat,sat,0.003819,619

@@ -1,0 +1,28 @@
+% Standalone content excerpt for addition to the Intent2Proof proposal.
+% Requires \usepackage{graphicx,booktabs,amsmath,amssymb}.
+% Figures path should be adjusted to the proposal's directory.
+\subsection{Cross-IP streaming and shutdown: preliminary contract-composition evaluation}
+We constructed a same-clock streaming subsystem containing three instances of
+ZipCPU's pinned open-source \texttt{sfifo} IP, with a separately authored
+round-robin merge controller and reconfiguration shutdown gate. The approved
+system property is \(\mathbf G(\mathit{reconfig\_start}\!\Rightarrow\!P=0)\),
+where \(P\) is independently reconstructed from accepted ingress transfers
+minus completed sink transfers. FIFO interface contracts specify occupancy,
+full/empty flags, and legal handshake updates. For capacities 4, 8, and 16,
+exhaustive exploration of manually source-derived control equations visited
+354, 2,290, and 17,106 reachable states respectively. All healthy models
+satisfied the safety property; removing the sink-emptiness test from the
+shutdown guard generated a feasible two-transition counterexample in each
+configuration. Twelve independent native-Z3 checks confirmed the expected
+SAT/UNSAT statuses of the abstract one-step conservation, capacity and
+shutdown obligations, including negative controls.
+
+\emph{Scope and limitations:} The above are executed control-model and
+contract-composition checks, not direct proofs of the newly integrated RTL.
+The count-only SMT encoding was smaller than a conventional COI encoding,
+but measured median six-step solver time did not improve (0.234 s versus
+0.204 s). A new 18-task SBY benchmark has been generated for the pinned
+full RTL, standard COI, proposed contract abstraction, independent unit
+contract-discharge, mutant, and non-vacuity cover checks. It remains
+unexecuted in the local runtime. No system-level RTL proof or proof-time
+speedup is claimed until that benchmark completes.

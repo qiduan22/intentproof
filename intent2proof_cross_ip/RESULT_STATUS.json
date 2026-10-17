@@ -1,0 +1,16 @@
+{
+  "experiment": "cross-IP three-FIFO safe reconfiguration",
+  "benchmark_source": "ZipCPU/wb2axip/rtl/sfifo.v",
+  "pinned_commit": "2e8d3bc2d26ddc33d1881022a2a2b9d3f0c16b9b",
+  "pinned_source_sha256": "76a653781f1ecca1c1da92c4e5105ecd5d0f832b13cbfd31300ec88d9947e0c1",
+  "source_derived_exhaustive_check": "EXECUTED_PASS_3_CORRECT_AND_3_FAULTY",
+  "contract_induction_native_z3": "EXECUTED_12_OF_12_EXPECTED",
+  "native_z3_bmc_six_step": "EXECUTED_9_CORRECT_UNSAT_AND_9_MUTANT_SAT",
+  "native_z3_bmc_ten_step": "3_CORRECT_UNKNOWN_AND_3_MUTANT_SAT",
+  "real_multi_module_rtl_sby": "NOT_EXECUTED",
+  "new_sby_tasks_prepared": 18,
+  "harness_regression_tests_passed": 12,
+  "runtime_speedup_claim": false,
+  "automated_abstraction_soundness_claim": false,
+  "scope": "control-only, one clock; payload ordering, asynchronous CDC, physical timing, AI specification translation excluded"
+}

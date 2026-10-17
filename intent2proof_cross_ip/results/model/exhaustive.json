@@ -1,0 +1,227 @@
+[
+  {
+    "capacity": 4,
+    "variant": "correct",
+    "result": "EXHAUSTIVE_SAFE",
+    "reachable_states": 354,
+    "evaluated_transfers": 3808,
+    "wall_seconds": 0.00964,
+    "shortest_violation_transitions": null,
+    "cover": {
+      "both_ingress_accepted": true,
+      "occupied_shutdown": true,
+      "reconfig_reached": true,
+      "sink_occupied": true,
+      "both_sources_nonempty": true
+    },
+    "counterexample": [],
+    "scope": "source-derived finite-state control equations; not full RTL elaboration"
+  },
+  {
+    "capacity": 4,
+    "variant": "mutant_omits_output_fifo",
+    "result": "VIOLATION",
+    "reachable_states": 18,
+    "evaluated_transfers": 48,
+    "wall_seconds": 0.00017,
+    "shortest_violation_transitions": 2,
+    "cover": {
+      "both_ingress_accepted": true,
+      "occupied_shutdown": true,
+      "reconfig_reached": true,
+      "sink_occupied": true,
+      "both_sources_nonempty": true
+    },
+    "counterexample": [
+      {
+        "inputs": {
+          "wr_a": 0,
+          "wr_b": 1,
+          "rd_sink": 0,
+          "shutdown_request": 0
+        },
+        "after_state": [
+          0,
+          1,
+          0,
+          true,
+          false,
+          true,
+          false,
+          false,
+          1
+        ]
+      },
+      {
+        "inputs": {
+          "wr_a": 0,
+          "wr_b": 0,
+          "rd_sink": 0,
+          "shutdown_request": 1
+        },
+        "after_state": [
+          0,
+          0,
+          1,
+          true,
+          true,
+          false,
+          false,
+          true,
+          1
+        ]
+      }
+    ],
+    "scope": "source-derived finite-state control equations; not full RTL elaboration"
+  },
+  {
+    "capacity": 8,
+    "variant": "correct",
+    "result": "EXHAUSTIVE_SAFE",
+    "reachable_states": 2290,
+    "evaluated_transfers": 30944,
+    "wall_seconds": 0.06107,
+    "shortest_violation_transitions": null,
+    "cover": {
+      "both_ingress_accepted": true,
+      "occupied_shutdown": true,
+      "reconfig_reached": true,
+      "sink_occupied": true,
+      "both_sources_nonempty": true
+    },
+    "counterexample": [],
+    "scope": "source-derived finite-state control equations; not full RTL elaboration"
+  },
+  {
+    "capacity": 8,
+    "variant": "mutant_omits_output_fifo",
+    "result": "VIOLATION",
+    "reachable_states": 18,
+    "evaluated_transfers": 48,
+    "wall_seconds": 0.00017,
+    "shortest_violation_transitions": 2,
+    "cover": {
+      "both_ingress_accepted": true,
+      "occupied_shutdown": true,
+      "reconfig_reached": true,
+      "sink_occupied": true,
+      "both_sources_nonempty": true
+    },
+    "counterexample": [
+      {
+        "inputs": {
+          "wr_a": 0,
+          "wr_b": 1,
+          "rd_sink": 0,
+          "shutdown_request": 0
+        },
+        "after_state": [
+          0,
+          1,
+          0,
+          true,
+          false,
+          true,
+          false,
+          false,
+          1
+        ]
+      },
+      {
+        "inputs": {
+          "wr_a": 0,
+          "wr_b": 0,
+          "rd_sink": 0,
+          "shutdown_request": 1
+        },
+        "after_state": [
+          0,
+          0,
+          1,
+          true,
+          true,
+          false,
+          false,
+          true,
+          1
+        ]
+      }
+    ],
+    "scope": "source-derived finite-state control equations; not full RTL elaboration"
+  },
+  {
+    "capacity": 16,
+    "variant": "correct",
+    "result": "EXHAUSTIVE_SAFE",
+    "reachable_states": 17106,
+    "evaluated_transfers": 254176,
+    "wall_seconds": 0.52454,
+    "shortest_violation_transitions": null,
+    "cover": {
+      "both_ingress_accepted": true,
+      "occupied_shutdown": true,
+      "reconfig_reached": true,
+      "sink_occupied": true,
+      "both_sources_nonempty": true
+    },
+    "counterexample": [],
+    "scope": "source-derived finite-state control equations; not full RTL elaboration"
+  },
+  {
+    "capacity": 16,
+    "variant": "mutant_omits_output_fifo",
+    "result": "VIOLATION",
+    "reachable_states": 18,
+    "evaluated_transfers": 48,
+    "wall_seconds": 0.00018,
+    "shortest_violation_transitions": 2,
+    "cover": {
+      "both_ingress_accepted": true,
+      "occupied_shutdown": true,
+      "reconfig_reached": true,
+      "sink_occupied": true,
+      "both_sources_nonempty": true
+    },
+    "counterexample": [
+      {
+        "inputs": {
+          "wr_a": 0,
+          "wr_b": 1,
+          "rd_sink": 0,
+          "shutdown_request": 0
+        },
+        "after_state": [
+          0,
+          1,
+          0,
+          true,
+          false,
+          true,
+          false,
+          false,
+          1
+        ]
+      },
+      {
+        "inputs": {
+          "wr_a": 0,
+          "wr_b": 0,
+          "rd_sink": 0,
+          "shutdown_request": 1
+        },
+        "after_state": [
+          0,
+          0,
+          1,
+          true,
+          true,
+          false,
+          false,
+          true,
+          1
+        ]
+      }
+    ],
+    "scope": "source-derived finite-state control equations; not full RTL elaboration"
+  }
+]

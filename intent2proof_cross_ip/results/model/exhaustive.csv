@@ -1,0 +1,7 @@
+capacity,variant,result,reachable_states,wall_seconds,shortest_violation_transitions
+4,correct,EXHAUSTIVE_SAFE,354,0.00964,
+4,mutant_omits_output_fifo,VIOLATION,18,0.00017,2
+8,correct,EXHAUSTIVE_SAFE,2290,0.06107,
+8,mutant_omits_output_fifo,VIOLATION,18,0.00017,2
+16,correct,EXHAUSTIVE_SAFE,17106,0.52454,
+16,mutant_omits_output_fifo,VIOLATION,18,0.00018,2
