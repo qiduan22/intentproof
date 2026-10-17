@@ -1,0 +1,75 @@
+name: Intent2Proof AXI v3 legal-transaction refinement
+
+on:
+  workflow_dispatch:
+    inputs:
+      formal_timeout_seconds:
+        description: 'Per-task timeout in seconds'
+        required: true
+        default: '450'
+        type: string
+      cover_depth:
+        description: 'Bound for protocol-conforming cover witnesses'
+        required: true
+        default: '120'
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  axi-v3-legal-transactions:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 160
+    steps:
+      - name: Checkout this repository
+        uses: actions/checkout@v6
+
+      - name: Install OSS CAD Suite
+        uses: YosysHQ/setup-oss-cad-suite@v4
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Verify pinned source and offline regression tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD
+          yosys -V
+          command -v sby
+          command -v z3
+          python3 -m unittest discover -s Intent2Proof_AXI_Protocol_Conformance/tests -v
+          python3 Intent2Proof_AXI_Protocol_Conformance/scripts/check_local_protocol.py
+
+      - name: Execute upstream RTL control equivalence with legal AXI slaves
+        shell: bash
+        env:
+          FORMAL_TIMEOUT: ${{ inputs.formal_timeout_seconds }}
+          COVER_DEPTH: ${{ inputs.cover_depth }}
+        run: |
+          set -euo pipefail
+          [[ "$FORMAL_TIMEOUT" =~ ^[1-9][0-9]*$ ]]
+          [[ "$COVER_DEPTH" =~ ^[1-9][0-9]*$ ]]
+          python3 Intent2Proof_AXI_Protocol_Conformance/scripts/run_sby_protocol_v3.py \
+            --timeout "$FORMAL_TIMEOUT" --depth "$COVER_DEPTH" \
+            --work Intent2Proof_AXI_Protocol_Conformance/results/github_sby
+
+      - name: Show verification gate outcome
+        if: always()
+        shell: bash
+        run: |
+          if test -f Intent2Proof_AXI_Protocol_Conformance/results/github_sby/RUN_STATUS.json; then
+            cat Intent2Proof_AXI_Protocol_Conformance/results/github_sby/RUN_STATUS.json
+          else
+            echo 'No complete formal results: contract NOT QUALIFIED.'
+          fi
+
+      - name: Upload formal logs and witnesses, even on failure
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: intent2proof-axi-v3-legal-transaction-evidence
+          path: |
+            Intent2Proof_AXI_Protocol_Conformance/results/github_sby/
+            Intent2Proof_AXI_Protocol_Conformance/results/local/
+          if-no-files-found: warn

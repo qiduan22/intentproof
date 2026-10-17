@@ -1,0 +1,20 @@
+% Intent2Proof: protocol-aware AXI-Lite evaluation (prospective, not executed in real RTL)
+\subsection{Protocol-Aware AXI-Lite Refinement: Benchmark Extension}
+The initial read-control refinement miter had shown cycle-equivalence under
+its declared assumptions, but its contention covers admitted unsolicited
+responses. We therefore developed a two-slave, transaction-aware environment
+in which each response can follow only a prior downstream
+\texttt{ARVALID}\,$\land$\,\texttt{ARREADY} acceptance. An independent
+scoreboard checks outstanding reads and response stability under backpressure.
+The revised cover requires two downstream read-address acceptances, two
+matched downstream response completions, and completion for both masters.
+Five read-control equivalence proof tasks, four legal transaction covers,
+and three fault-injection checks are specified for the pinned open-source
+\texttt{axil\_interconnect} and the manually authored v2 contract.
+
+\textbf{Evidence boundary.} Local Python reference-model exploration checked
+3 and 9 reachable protocol-control states for one and two slaves, respectively,
+and detected an unsolicited-response fault. These are not RTL proofs. Full RTL
+Yosys/SymbiYosys execution and independent witness audit remain necessary;
+no improved solver runtime, automatic abstraction, write-path correctness, or
+general trace inclusion is claimed on the basis of the local experiment.

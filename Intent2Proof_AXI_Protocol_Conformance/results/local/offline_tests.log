@@ -1,0 +1,23 @@
+test_actual_downstream_events_required_for_contention_cover (test_protocol_v3.ProtocolAwareV3.test_actual_downstream_events_required_for_contention_cover) ... ok
+test_gate_fail_closed_missing_task (test_protocol_v3.ProtocolAwareV3.test_gate_fail_closed_missing_task) ... ok
+test_gate_fail_closed_mutant_no_witness (test_protocol_v3.ProtocolAwareV3.test_gate_fail_closed_mutant_no_witness) ... ok
+test_gate_fail_closed_uncovered_contended_traffic (test_protocol_v3.ProtocolAwareV3.test_gate_fail_closed_uncovered_contended_traffic) ... ok
+test_gate_fail_closed_unknown (test_protocol_v3.ProtocolAwareV3.test_gate_fail_closed_unknown) ... ok
+test_gate_fail_closed_unproved_pdr (test_protocol_v3.ProtocolAwareV3.test_gate_fail_closed_unproved_pdr) ... ok
+test_independent_downstream_scoreboard (test_protocol_v3.ProtocolAwareV3.test_independent_downstream_scoreboard) ... ok
+test_local_exhaustive_reference_safety (test_protocol_v3.ProtocolAwareV3.test_local_exhaustive_reference_safety) ... ok
+test_local_invalid_slave_detected (test_protocol_v3.ProtocolAwareV3.test_local_invalid_slave_detected) ... ok
+test_local_two_legal_transactions_reachable (test_protocol_v3.ProtocolAwareV3.test_local_two_legal_transactions_reachable) ... ok
+test_pinned_source_integrity (test_protocol_v3.ProtocolAwareV3.test_pinned_source_integrity) ... ok
+test_positive_gate_never_claims_general_refinement (test_protocol_v3.ProtocolAwareV3.test_positive_gate_never_claims_general_refinement) ... ok
+test_sby_generated_and_wired_correctly (test_protocol_v3.ProtocolAwareV3.test_sby_generated_and_wired_correctly) ... ok
+test_slave_response_requires_previous_ar (test_protocol_v3.ProtocolAwareV3.test_slave_response_requires_previous_ar) ... ok
+test_stall_cover_requires_consecutive_cycles (test_protocol_v3.ProtocolAwareV3.test_stall_cover_requires_consecutive_cycles) ... ok
+test_task_matrix (test_protocol_v3.ProtocolAwareV3.test_task_matrix) ... ok
+test_unmapped_cover_forbids_downstream_accepts (test_protocol_v3.ProtocolAwareV3.test_unmapped_cover_forbids_downstream_accepts) ... ok
+test_upstream_is_unmodified_and_read_only_miter (test_protocol_v3.ProtocolAwareV3.test_upstream_is_unmodified_and_read_only_miter) ... ok
+
+----------------------------------------------------------------------
+Ran 18 tests in 0.009s
+
+OK

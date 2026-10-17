@@ -1,0 +1,9 @@
+{
+  "test_scope": "Python reference transition system; NOT compiled Verilog",
+  "legal_one_slave_reachable_states": 3,
+  "legal_two_slave_reachable_states": 9,
+  "legal_one_slave_explored_input_transitions": 48,
+  "legal_two_slave_explored_input_transitions": 2304,
+  "unsolicited_response_mutation_detected": true,
+  "two_transaction_reachability_cycles": 6
+}
