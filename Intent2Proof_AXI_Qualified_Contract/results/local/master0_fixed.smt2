@@ -1,0 +1,13 @@
+(set-logic QF_BV)
+(declare-fun arvalid () (_ BitVec 2))
+(define-fun source_ready () (_ BitVec 2) #b00)
+(define-fun contract_v2_ready () (_ BitVec 2) #b00)
+(define-fun old_ready () (_ BitVec 2)
+    (ite (= arvalid #b00) #b00
+         (ite (= ((_ extract 0 0) arvalid) #b1) #b01 #b10)))
+(define-fun source_accept () (_ BitVec 2) (bvand arvalid source_ready))
+(define-fun v2_accept () (_ BitVec 2) (bvand arvalid contract_v2_ready))
+(define-fun old_accept () (_ BitVec 2) (bvand arvalid old_ready))
+(assert (= arvalid #b01))
+(assert (not (= source_accept v2_accept)))
+(check-sat)

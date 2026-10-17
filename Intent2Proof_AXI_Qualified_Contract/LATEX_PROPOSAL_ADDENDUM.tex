@@ -1,0 +1,19 @@
+% Intent2Proof: use only as explicitly preliminary evaluation; full RTL v2 run pending.
+\subsection{Repairing and testing a cycle-accurate AXI-Lite control contract}
+Following the observed address-acceptance mismatch between a combinational-ready
+candidate contract and the registered-ready upstream AXI-Lite interconnect,
+we constructed a read-only control abstraction that preserves the original
+arbitration mechanism, registered address/response handshake timing,
+address decoding, response-status routing, and backpressure behavior.
+The miter compares two master ports and two destination ports under matched
+exogenous inputs. Its observations comprise address-ready, read-response-valid,
+downstream address-valid, downstream response-ready, response code when valid,
+and downstream address when valid. Read data is explicitly excluded.
+Seven source-anchored, one-step Z3 snapshots yielded their expected SAT/UNSAT
+outcomes, and 14 harness regression tests passed. The complete evaluation
+includes seven unbounded miter proofs, three non-vacuity covers, and two
+negative controls against unmodified, pinned upstream RTL. At the time of
+this addendum, these 12 SymbiYosys tasks were prepared but not executed in
+this environment. Thus no full-RTL refinement proof, general trace-inclusion
+claim, or solver-speedup measurement is asserted. Approval remains blocked
+until the proof conditions and scope-specific assumption checks are discharged.

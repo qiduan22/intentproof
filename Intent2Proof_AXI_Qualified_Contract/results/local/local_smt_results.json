@@ -1,0 +1,51 @@
+{
+  "study": "SOURCE_GROUNDED_SNAPSHOT_CHECKS_NOT_RTL_EQUIVALENCE",
+  "scope": "restricted one-step equations anchored by text-shape checks",
+  "source_shape_checks": 6,
+  "full_rtl_proof_executed_here": false,
+  "upstream_file_sha256": "f685b0861d4d7a93a8ce4a938589d57e5fdd186204dea32436828496e1426efe",
+  "results": [
+    {
+      "scenario": "no_request_fixed",
+      "scope": "first post-reset request opportunity",
+      "expected": "unsat",
+      "observed": "unsat"
+    },
+    {
+      "scenario": "master0_fixed",
+      "scope": "first post-reset request opportunity",
+      "expected": "unsat",
+      "observed": "unsat"
+    },
+    {
+      "scenario": "both_masters_fixed",
+      "scope": "first post-reset request opportunity",
+      "expected": "unsat",
+      "observed": "unsat"
+    },
+    {
+      "scenario": "old_contract_master0_mismatch",
+      "scope": "first post-reset request opportunity",
+      "expected": "sat",
+      "observed": "sat"
+    },
+    {
+      "scenario": "old_contract_dual_mismatch",
+      "scope": "first post-reset request opportunity",
+      "expected": "sat",
+      "observed": "sat"
+    },
+    {
+      "scenario": "v2_stalled_response_hold",
+      "scope": "single-step held response while stalled",
+      "expected": "unsat",
+      "observed": "unsat"
+    },
+    {
+      "scenario": "mutant_dropped_stalled_response",
+      "scope": "single-step held response while stalled",
+      "expected": "sat",
+      "observed": "sat"
+    }
+  ]
+}
