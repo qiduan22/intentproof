@@ -1,0 +1,58 @@
+name: Intent2Proof heterogeneous AXI benchmark
+on:
+  workflow_dispatch:
+    inputs:
+      upstream_ref:
+        description: 'Full upstream commit SHA; master only for initial resolution'
+        default: 'master'
+        required: true
+        type: string
+      timeout_seconds:
+        description: 'Per-task SBY timeout in seconds'
+        default: '180'
+        required: true
+        type: string
+permissions:
+  contents: read
+jobs:
+  axi-heterogeneous:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 65
+    steps:
+      - name: Checkout Intent2Proof experiment
+        uses: actions/checkout@v6
+      - name: Install OSS CAD Suite
+        uses: YosysHQ/setup-oss-cad-suite@v4
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Check environment and tests
+        shell: bash
+        run: |
+          set -euxo pipefail
+          command -v yosys && command -v sby && command -v git
+          yosys -V
+          python3 -m unittest discover -s intent2proof_axi_hetero/tests -v
+      - name: Verify actual upstream heterogeneous AXI RTL
+        shell: bash
+        env:
+          UPSTREAM_REF: ${{ inputs.upstream_ref }}
+          TIMEOUT_SECONDS: ${{ inputs.timeout_seconds }}
+        run: |
+          set -euo pipefail
+          [[ "$TIMEOUT_SECONDS" =~ ^[1-9][0-9]*$ ]]
+          python3 intent2proof_axi_hetero/scripts/run_axi_sby.py \
+            --ref "$UPSTREAM_REF" --timeout "$TIMEOUT_SECONDS" --depth 60 \
+            --work intent2proof_axi_hetero/results/upstream_sby
+      - name: Fail-closed verification evidence gate
+        if: always()
+        shell: bash
+        run: |
+          python3 intent2proof_axi_hetero/scripts/gate_axi.py \
+            --work intent2proof_axi_hetero/results/upstream_sby
+      - name: Upload full evidence, including failures
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: intent2proof-heterogeneous-axi-results
+          path: intent2proof_axi_hetero/results/upstream_sby/
+          if-no-files-found: warn
