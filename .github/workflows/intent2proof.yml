@@ -1,0 +1,89 @@
+name: Intent2Proof pinned RTL verification
+
+on:
+  workflow_dispatch:
+    inputs:
+      upstream_sha:
+        description: '40-character ZipCPU/wb2axip commit SHA (optional: pin remote master at start)'
+        required: false
+        type: string
+      per_task_timeout:
+        description: 'Per-SBY-task timeout in seconds'
+        required: false
+        default: '180'
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  upstream-sby:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout benchmark harness
+        uses: actions/checkout@v4
+      - name: Install OSS CAD Suite
+        uses: YosysHQ/setup-oss-cad-suite@v4
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Verify required formal tools
+        shell: bash
+        run: |
+          set -euxo pipefail
+          command -v yosys
+          command -v sby
+          command -v z3
+          command -v git
+          mkdir -p intent2proof_upstream_validation/results/upstream_sby
+          { yosys -V; sby --version || true; z3 --version; python3 --version; } \
+             > intent2proof_upstream_validation/results/upstream_sby/tool_versions.txt 2>&1
+          cat intent2proof_upstream_validation/results/upstream_sby/tool_versions.txt
+      - name: Resolve and freeze upstream commit SHA
+        shell: bash
+        env:
+          REQUESTED_SHA: ${{ inputs.upstream_sha }}
+        run: |
+          set -euo pipefail
+          if [ -z "$REQUESTED_SHA" ]; then
+            SHA="$(git ls-remote https://github.com/ZipCPU/wb2axip.git refs/heads/master | cut -f1)"
+          else
+            SHA="$REQUESTED_SHA"
+          fi
+          [[ "$SHA" =~ ^[0-9a-fA-F]{40}$ ]]
+          echo "UPSTREAM_SHA=$SHA" >> "$GITHUB_ENV"
+          printf 'Frozen upstream SHA: %s\n' "$SHA"
+      - name: Offline harness unit tests
+        run: |
+          python3 intent2proof_upstream_validation/upstream_benchmark.py --self-test
+          python3 -m unittest discover -s intent2proof_upstream_validation/tests -v
+      - name: Run pinned upstream RTL formal tasks
+        id: formal
+        shell: bash
+        env:
+          PER_TASK_TIMEOUT: ${{ inputs.per_task_timeout }}
+        run: |
+          set -euo pipefail
+          [[ "$PER_TASK_TIMEOUT" =~ ^[1-9][0-9]*$ ]]
+          python3 intent2proof_upstream_validation/upstream_benchmark.py \
+            --commit "$UPSTREAM_SHA" \
+            --work intent2proof_upstream_validation/results/upstream_sby \
+            --timeout "$PER_TASK_TIMEOUT" --depth 30
+      - name: Strict measured-result gate
+        if: always()
+        run: |
+          python3 intent2proof_upstream_validation/gate_upstream_results.py \
+            --work intent2proof_upstream_validation/results/upstream_sby
+      - name: Plot verified results
+        if: success()
+        run: |
+          python3 -m pip install --quiet matplotlib
+          python3 intent2proof_upstream_validation/plot_upstream_results.py \
+            --work intent2proof_upstream_validation/results/upstream_sby
+      - name: Upload evidence, including errors
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: intent2proof-pinned-upstream-sby
+          path: intent2proof_upstream_validation/results/upstream_sby
+          if-no-files-found: warn
