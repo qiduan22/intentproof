@@ -1,0 +1,56 @@
+name: Intent2Proof AXI refinement and true contention
+on:
+  workflow_dispatch:
+    inputs:
+      timeout_seconds:
+        description: "Formal timeout per task (s)"
+        required: true
+        default: "180"
+        type: string
+permissions:
+  contents: read
+jobs:
+  axi-refinement:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+      - name: Install OSS CAD Suite
+        uses: YosysHQ/setup-oss-cad-suite@v4
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Validate pinned sources and harness
+        shell: bash
+        run: |
+          set -euxo pipefail
+          yosys -V
+          command -v sby
+          command -v z3
+          python3 -m unittest discover -s Intent2Proof_AXI_Refinement/tests -v
+      - name: Run formal refinement and genuine contention tasks
+        shell: bash
+        env:
+          FORMAL_TIMEOUT: ${{ inputs.timeout_seconds }}
+        run: |
+          set -euo pipefail
+          [[ "$FORMAL_TIMEOUT" =~ ^[1-9][0-9]*$ ]]
+          python3 Intent2Proof_AXI_Refinement/scripts/run_refinement.py \
+            --timeout "$FORMAL_TIMEOUT" --depth 80 \
+            --work Intent2Proof_AXI_Refinement/results/github_sby
+      - name: Print qualification outcome
+        if: always()
+        shell: bash
+        run: |
+          if [ -f Intent2Proof_AXI_Refinement/results/github_sby/RUN_STATUS.json ]; then
+            cat Intent2Proof_AXI_Refinement/results/github_sby/RUN_STATUS.json
+          else
+            echo 'No formal status file; qualification not established.'
+          fi
+      - name: Upload full evidence even when an obligation fails
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: intent2proof-axi-refinement-evidence
+          path: Intent2Proof_AXI_Refinement/results/github_sby/
+          if-no-files-found: warn

@@ -1,0 +1,40 @@
+{
+  "experiment": "ONE_STEP_SOURCE_GROUNDED_CHECK_NOT_UPSTREAM_RTL_PROOF",
+  "scope": "post-reset ARREADY under explicitly described phase and 2-state inputs",
+  "upstream_ref": "516bd5dadc3365b7f9e225d2af8fe0b8d804fe53",
+  "upstream_sha256": "f685b0861d4d7a93a8ce4a938589d57e5fdd186204dea32436828496e1426efe",
+  "candidate_sha256": "02e9e80c650ab4701c27045f47f129cdd4c4c8de73dbc25a5e6f559e208714b5",
+  "source_shape_checks": 5,
+  "results": [
+    {
+      "scenario": "single_master_0",
+      "ARVALID": "01",
+      "actual_ready": "00",
+      "candidate_ready": "01",
+      "actual_accept": "00",
+      "candidate_accept": "01",
+      "mismatch_satisfiable": "sat",
+      "expected": "sat"
+    },
+    {
+      "scenario": "two_master_contention",
+      "ARVALID": "11",
+      "actual_ready": "00",
+      "candidate_ready": "01",
+      "actual_accept": "00",
+      "candidate_accept": "01",
+      "mismatch_satisfiable": "sat",
+      "expected": "sat"
+    },
+    {
+      "scenario": "no_requests",
+      "ARVALID": "00",
+      "actual_ready": "00",
+      "candidate_ready": "00",
+      "actual_accept": "00",
+      "candidate_accept": "00",
+      "mismatch_satisfiable": "unsat",
+      "expected": "unsat"
+    }
+  ]
+}

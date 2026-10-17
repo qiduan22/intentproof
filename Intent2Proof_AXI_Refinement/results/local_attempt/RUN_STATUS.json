@@ -1,0 +1,6 @@
+{
+  "status": "BLOCKED_MISSING_FORMAL_TOOLS",
+  "formal_proofs_executed": 0,
+  "contract_trace_inclusion": "NOT_PROVED",
+  "formal_change_gate": "REVIEW_REQUIRED_NO_AUTOMATIC_APPROVAL"
+}

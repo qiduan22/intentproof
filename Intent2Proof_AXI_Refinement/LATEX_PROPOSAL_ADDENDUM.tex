@@ -1,0 +1,27 @@
+% Preliminary follow-up evaluation for Intent2Proof proposal.
+% Include this only as SOURCE-GROUNDED evidence until real-RTL SBY tasks finish.
+\subsection{Abstraction qualification: heterogeneous AXI-Lite control}
+A follow-up to our open-source AXI-Lite benchmark examines whether the smaller
+contract candidate preserves the observable accepted-request events of the
+pinned upstream interconnect. We found that the concrete implementation uses
+an initialized register for its read-address-ready output, whereas the candidate
+uses a combinational ready expression when idle. Under source-grounded
+post-reset conditions, Z3 returns \texttt{SAT} for a mismatch with either one
+read requester or two simultaneous requesters, and \texttt{UNSAT} for a
+no-request mismatch. These are one-step checks of source-anchored equations,
+\emph{not} executed equivalence checks on fully elaborated RTL.
+
+This result exposes a limitation of the earlier benchmark: two models may
+independently satisfy the same safety property even if their handshake traces
+differ. We therefore prepared a matched-input SymbiYosys miter that compares
+accepted read-address events and a separate coverage property requiring both
+masters to present requests to the same slave and eventually complete their
+transactions. Negative controls introduce response-routing and unsafe-shutdown
+faults. The eight prepared real-RTL tasks have not yet been run in this
+execution environment. The run gate will reject the current candidate as a
+cycle-exact replacement if the expected miter witness is confirmed and will
+\emph{not} treat a shorter verification run as evidence of sound abstraction.
+
+The strongest product implication is the need to \emph{qualify} every
+property-directed abstraction against a precise observation alphabet and
+assumption set before reusing its proofs for the actual FPGA build.
