@@ -1,0 +1,68 @@
+name: Intent2Proof AXI contract v2 refinement
+
+on:
+  workflow_dispatch:
+    inputs:
+      formal_timeout_seconds:
+        description: Per-task formal timeout (seconds)
+        required: true
+        default: '300'
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  axi-contract-v2:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Install OSS CAD Suite
+        uses: YosysHQ/setup-oss-cad-suite@v4
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Verify environment, pinned RTL, and local test harness
+        shell: bash
+        run: |
+          set -euxo pipefail
+          git rev-parse HEAD
+          yosys -V
+          command -v sby
+          command -v z3
+          python3 -m unittest discover -s Intent2Proof_AXI_Qualified_Contract/tests -v
+          python3 Intent2Proof_AXI_Qualified_Contract/scripts/check_local_snapshots.py
+
+      - name: Run real-RTL contract refinement miter
+        shell: bash
+        env:
+          FORMAL_TIMEOUT: ${{ inputs.formal_timeout_seconds }}
+        run: |
+          set -euo pipefail
+          [[ "$FORMAL_TIMEOUT" =~ ^[1-9][0-9]*$ ]]
+          python3 Intent2Proof_AXI_Qualified_Contract/scripts/run_sby_v2.py \
+            --timeout "$FORMAL_TIMEOUT" --depth 80 \
+            --work Intent2Proof_AXI_Qualified_Contract/results/github_sby
+
+      - name: Print formal qualification status
+        if: always()
+        shell: bash
+        run: |
+          if test -f Intent2Proof_AXI_Qualified_Contract/results/github_sby/RUN_STATUS.json; then
+            cat Intent2Proof_AXI_Qualified_Contract/results/github_sby/RUN_STATUS.json
+          else
+            echo 'No results; contract NOT QUALIFIED.'
+          fi
+
+      - name: Upload all available formal evidence
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: intent2proof-axi-control-v2-evidence
+          path: |
+            Intent2Proof_AXI_Qualified_Contract/results/github_sby/
+            Intent2Proof_AXI_Qualified_Contract/results/local/local_smt_results.json
+          if-no-files-found: warn
