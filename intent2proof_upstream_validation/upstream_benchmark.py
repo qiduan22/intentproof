@@ -54,63 +54,17 @@ module sfifo_control_ref #(parameter LGFLEN = 2)(
 endmodule
 '''
 
-# "front_end" model is a synthesis configuration of source with FORMAL
-# *not defined*. Formal collateral conditional on FORMAL is removed so the SBY
-# process can attach the independent assertions without vendor's own testbench.
-def preprocess_formal_disabled(source: str) -> str:
-    """Remove FORMAL-only guarded collateral, preserving active synthesis RTL.
-
-    This small preprocessor is intentionally strict; unsupported directive names
-    cause rejection rather than silent reinterpretation. It is NOT a general SV
-    macro-expander. Other macro directives remain in the output for Yosys.
-    """
-    stack=[]; enabled=True; out=[]; num_removed=0
-    for ln, line in enumerate(source.splitlines(keepends=True),1):
-        m=re.match(r'^\s*`(ifdef|ifndef|else|elsif|endif)\b\s*(\w+)?', line)
-        if not m:
-            if enabled:out.append(line)
-            else:num_removed+=1
-            continue
-        op,arg=m.group(1),m.group(2)
-        # We evaluate only ifdefs whose name is FORMAL; nested conditional
-        # structure under a disabled FORMAL branch is tracked but not emitted.
-        if op in ('ifdef','ifndef'):
-            is_formal=(arg=='FORMAL')
-            if is_formal:
-                take = (op == 'ifndef')
-                stack.append((enabled, is_formal, take, False))
-                enabled = enabled and take
-            else:
-                stack.append((enabled, False, None, False))
-                if enabled: out.append(line)
-        elif op=='else':
-            if not stack: raise ValueError(f'unmatched else line {ln}')
-            parent, formal, take, used_else = stack[-1]
-            if used_else: raise ValueError(f'duplicate else line {ln}')
-            stack[-1] = (parent,formal,take,True)
-            if formal:
-                enabled = parent and not take
-            else:
-                enabled = parent
-                if enabled: out.append(line)
-        elif op=='elsif':
-            if not stack:raise ValueError(f'unmatched elsif line {ln}')
-            parent, formal, take, used_else = stack[-1]
-            if formal: raise ValueError('unsupported `elsif inside `ifdef FORMAL; fail closed')
-            enabled=parent
-            if enabled:out.append(line)
-        else:
-            if not stack:raise ValueError(f'unmatched endif line {ln}')
-            parent, formal, take, used_else=stack.pop()
-            enabled=parent
-            if enabled and not formal:out.append(line)
-    if stack:raise ValueError('unclosed preprocessor conditionals')
-    if num_removed==0:raise ValueError('FORMAL collateral not found; source layout changed')
-    result=''.join(out)
-    if '`ifdef FORMAL' in result:raise ValueError('nested FORMAL condition remains')
-    for required in ['module sfifo', 'wire w_wr', 'wire w_rd', 'o_fill', 'r_empty']:
-        if required not in result:raise ValueError(f'expected source element missing: {required}')
-    return result
+# Preserve the upstream RTL byte-for-byte. Yosys reads this file WITHOUT
+# -formal (implicit SYNTHESIS macro); independently authored assertions are
+# read WITH -formal (implicit FORMAL macro). Do not use ad hoc preprocessing
+# that could accidentally remove active RTL logic.
+def validate_upstream_rtl(source: str) -> str:
+    if not re.search(r'(?m)^\s*module\s+sfifo\b',source):
+        raise ValueError('upstream source does not declare module sfifo')
+    for signal in ('i_clk','i_reset','i_wr','i_rd','o_full','o_empty','o_fill'):
+        if not re.search(r'\b'+re.escape(signal)+r'\b',source):
+            raise ValueError('upstream sfifo interface missing: '+signal)
+    return source
 
 def wrapper(kind: str, lg: int, bw: int) -> str:
     assert kind in ('full','coi','contract','mutant','cover')
@@ -185,11 +139,24 @@ endmodule
 '''
 
 def mutate(source: str) -> str:
-    # Deliberate negative control: ignore full flag when accepting a write.
-    pat=r'wire\s+w_wr\s*=\s*\(i_wr\s*&&\s*!o_full\)\s*;'
-    modified,n=re.subn(pat,'wire w_wr = i_wr; // INTENT2PROOF INJECTED CONTROL BUG',source)
-    if n!=1:raise ValueError(f'Expected exactly one write gating expression, got {n}; changed source?')
-    return modified
+    """Inject a real DUT error into a private RTL copy: force `o_full` low.
+
+    No assumptions about internal signal names such as `w_wr` are needed.
+    Require a unique continuous output driver; unfamiliar RTL fails closed.
+    """
+    pat=r'(?m)^(?P<indent>[ \t]*)assign[ \t]+o_full[ \t]*=[ \t]*(?P<rhs>[^;]+);'
+    matches=list(re.finditer(pat,source))
+    if len(matches)!=1:
+        raise ValueError('mutant generation requires exactly one '
+                         f'`assign o_full = ...;` (found {len(matches)}); '
+                         'inspect pinned upstream RTL')
+    match=matches[0]
+    if not re.search(r'\b(?:r_full|o_fill)\b',match.group('rhs')):
+        raise ValueError('o_full assignment does not use expected full-state '
+                         'logic; refusing to mutate unfamiliar source')
+    injected=(match.group('indent')+
+              "assign o_full = 1'b0; // INTENT2PROOF INJECTED FULL-FLAG BUG")
+    return source[:match.start()]+injected+source[match.end():]
 
 def hash_file(path):return hashlib.sha256(path.read_bytes()).hexdigest()
 
@@ -237,14 +204,15 @@ def ensure_source(work:Path,revision:str|None,offline:bool):
     return repo,commit
 
 def sby_config(kind,variant,bench,base,work,depth,engine):
-    """Write SBY tasks with explicit source-file aliases.
+    """Read unmodified RTL in synthesis mode; test assertions in formal mode.
 
-    The [script] names MUST match files copied into task/src by [files].
-    SBY supports `alias path` syntax; without it the original harness
-    could not load source files, even on a fully provisioned machine.
+    Yosys `read_verilog -sv` defines SYNTHESIS, not FORMAL, excluding the
+    original design's FORMAL-only collateral without a custom preprocessor.
+    Yosys `read_verilog -formal -sv` enables the independent assertions.
     """
     mode='cover' if kind=='cover' else 'prove'
-    srcs='sfifo.v bench.v'+(' ref.v' if kind=='contract' else '')
+    reads='read_verilog -sv sfifo.v\nread_verilog -formal -sv bench.v\n'
+    if kind=='contract':reads+='read_verilog -formal -sv ref.v\n'
     body=f'''[options]
 mode {mode}
 depth {depth}
@@ -253,8 +221,7 @@ depth {depth}
 {('smtbmc z3' if kind=='cover' else engine)}
 
 [script]
-read -formal -sv {srcs}
-prep -top intent2proof_bench -flatten
+{reads}prep -top intent2proof_bench -flatten
 
 [files]
 sfifo.v {base.resolve()}
@@ -269,7 +236,8 @@ def run_yosys_stat(kind,rtl,bench,work,variant):
     json_out=work/f'{name}.json'
     # Both variants include the same RTL instance and property; difference is
     # whether the datapath output is an observable top-level output.
-    script=(f'read_verilog -sv -formal {rtl} {bench}; '
+    script=(f'read_verilog -sv {rtl}; '
+            f'read_verilog -formal -sv {bench}; '
             'hierarchy -check -top intent2proof_bench; '
             'proc; flatten; opt; memory_map; opt_clean -purge; '
             f'write_json {json_out}; stat')
@@ -324,12 +292,26 @@ def main():
     p.add_argument('--self-test',action='store_true',help='Test local generator without downloading upstream RTL')
     args=p.parse_args()
     if args.self_test:
-        test='''module sfifo; wire w_wr = (i_wr && !o_full);\n`ifdef FORMAL\nwire internal_formal;\n`ifdef F_PEEK\nwire hidden;\n`endif\n`endif\nwire w_rd = (i_rd && !o_empty); reg r_empty; reg [2:0] o_fill; endmodule\n'''
-        pre=preprocess_formal_disabled(test); assert 'internal_formal' not in pre and 'wire w_wr' in pre
-        assert 'INTENT2PROOF' in mutate(pre)
+        test="""module sfifo; wire r_full;
+assign o_full = r_full;
+`ifdef FORMAL
+  wire internal_formal;
+`endif
+endmodule
+"""
+        validate_upstream_rtl("""module sfifo;
+wire i_clk,i_reset,i_wr,i_rd,o_full,o_empty,o_fill;
+assign o_full = r_full;
+endmodule""")
+        assert 'INTENT2PROOF INJECTED' in mutate(test)
         for k in ['full','coi','contract','mutant','cover']:
-            txt=wrapper(k,2,8);assert 'endmodule' in txt
-        print('PASS: generator/self-test only; no upstream RTL evaluated');return
+            txt=wrapper(k,2,8); assert 'endmodule' in txt
+        cfg=sby_config('coi','check',ROOT/'tests'/'test_generator.py',ROOT/'upstream_benchmark.py',ROOT,30,'abc pdr')
+        try:
+            assert 'read_verilog -sv sfifo.v' in cfg.read_text()
+            assert 'read_verilog -formal -sv bench.v' in cfg.read_text()
+        finally: cfg.unlink()
+        print('PASS: offline generator/self-test only; upstream RTL not executed');return
     wd=args.work.resolve();wd.mkdir(parents=True,exist_ok=True)
     avail={t:shutil.which(t) for t in ['git','yosys','sby','z3']}
     preflight={'tools':avail,'required_available':all(avail.values()),'runtime':'upstream benchmark','execution_mode':('prepare-only' if args.only_prepare else 'run')}
@@ -347,12 +329,16 @@ def main():
     else:
         repo,commit=ensure_source(wd,args.commit,args.offline)
     dest=wd/'source_synthesis_view.v'
-    dest.write_text(preprocess_formal_disabled((repo/RTL).read_text()))
+    validate_upstream_rtl((repo/RTL).read_text())
+    shutil.copyfile(repo/RTL, dest)  # byte-for-byte copy of pinned source
+    if hash_file(dest) != hash_file(repo/RTL):
+        raise ValueError('pinned RTL copy differs from original source')
+    print('Pinned upstream source', commit, hash_file(repo/RTL), flush=True)
     mut=wd/'source_mutant.v';mut.write_text(mutate(dest.read_text()))
     ref=wd/'ref.v';ref.write_text(CONTROL_REF)
     manifest={'repository':REPO,'repository_commit_sha':commit,'source':RTL,
       'source_sha256':hash_file(repo/RTL),'synthesis_view_sha256':hash_file(dest),
-      'mutant_sha256':hash_file(mut),'note':'Source synthesis configuration retains data RTL but excludes upstream conditional FORMAL collateral; compare generated file to pinned commit.',
+      'mutant_sha256':hash_file(mut),'note':'Exact upstream RTL source copied unchanged; Yosys reads this source without -formal (SYNTHESIS) and the independent property wrapper with -formal (FORMAL).',
       'source_copy_in_artifact':False}
     (wd/'manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
     rows=[]
