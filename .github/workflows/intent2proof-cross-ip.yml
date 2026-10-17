@@ -1,0 +1,66 @@
+name: Intent2Proof cross-IP contract benchmark
+
+on:
+  workflow_dispatch:
+    inputs:
+      timeout_seconds:
+        description: 'Timeout per SBY task in seconds'
+        required: false
+        default: '180'
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  cross-ip-formal:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 85
+    steps:
+      - name: Checkout benchmark
+        uses: actions/checkout@v6
+      - name: Install OSS CAD Suite
+        uses: YosysHQ/setup-oss-cad-suite@v4
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Check formal tools and source integrity
+        shell: bash
+        run: |
+          set -euxo pipefail
+          command -v yosys
+          command -v sby
+          command -v z3
+          yosys -V
+          python3 -m unittest discover -s intent2proof_cross_ip/tests -v
+      - name: Formal verification across three interconnected FIFOs
+        shell: bash
+        env:
+          TIME_LIMIT: ${{ inputs.timeout_seconds }}
+        run: |
+          set -euo pipefail
+          [[ "$TIME_LIMIT" =~ ^[1-9][0-9]*$ ]]
+          python3 intent2proof_cross_ip/scripts/run_cross_ip.py \
+            --timeout "$TIME_LIMIT" --depth 40 \
+            --work intent2proof_cross_ip/results/sby
+      - name: Strict contract, mutant and proof gate
+        if: always()
+        shell: bash
+        run: |
+          python3 intent2proof_cross_ip/scripts/gate_cross_ip.py \
+            --work intent2proof_cross_ip/results/sby
+      - name: Plot upstream proof evidence
+        if: success()
+        shell: bash
+        run: |
+          python3 -m pip install --quiet matplotlib
+          python3 intent2proof_cross_ip/scripts/plot_results.py \
+            --work intent2proof_cross_ip/results/sby
+      - name: Upload all results, including failed tasks
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: intent2proof-cross-ip-contract-sby
+          path: |
+            intent2proof_cross_ip/results/sby/
+            intent2proof_cross_ip/figures/
+          if-no-files-found: warn
