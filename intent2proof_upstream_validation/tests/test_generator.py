@@ -15,20 +15,21 @@ parameter OPT_ASYNC_READ=1,OPT_WRITE_ON_FULL=0,OPT_READ_ON_EMPTY=0)(
  output wire [BW-1:0] o_data);
  reg r_empty; reg [LGFLEN:0] wr_addr,rd_addr;
  reg [BW-1:0] mem[0:(1<<LGFLEN)-1];
- wire w_wr = (i_wr && !o_full);
- wire w_rd = (i_rd && !o_empty);
+ wire take_write = (i_wr && !o_full);
+ wire take_read = (i_rd && !o_empty);
  initial begin o_fill=0; r_empty=1;wr_addr=0;rd_addr=0;end
  always @(posedge i_clk) begin
  if(i_reset) begin o_fill<=0; r_empty<=1;wr_addr<=0;rd_addr<=0;end
  else begin
- case({w_wr,w_rd}) 2'b01: o_fill<=o_fill-1;2'b10:o_fill<=o_fill+1;endcase
- case({w_wr,w_rd}) 2'b01:r_empty<=(o_fill<=1);2'b10:r_empty<=0;endcase
- if(w_wr)wr_addr<=wr_addr+1;
- if(w_rd)rd_addr<=rd_addr+1;
+ case({take_write,take_read}) 2'b01: o_fill<=o_fill-1;2'b10:o_fill<=o_fill+1;endcase
+ case({take_write,take_read}) 2'b01:r_empty<=(o_fill<=1);2'b10:r_empty<=0;endcase
+ if(take_write)wr_addr<=wr_addr+1;
+ if(take_read)rd_addr<=rd_addr+1;
  end
- if(w_wr)mem[wr_addr[LGFLEN-1:0]]<=i_data;
+ if(take_write)mem[wr_addr[LGFLEN-1:0]]<=i_data;
  end
- assign o_full=o_fill[LGFLEN];
+ wire r_full=o_fill[LGFLEN];
+ assign o_full = (i_rd && OPT_WRITE_ON_FULL) ? 1'b0 : r_full;
  assign o_empty=r_empty;
  assign o_data=mem[rd_addr[LGFLEN-1:0]];
  `ifdef FORMAL
@@ -41,15 +42,27 @@ endmodule
 `default_nettype wire
 '''
 class TestGenerator(unittest.TestCase):
- def test_source_filter(self):
-  txt=u.preprocess_formal_disabled(FIXTURE)
-  self.assertNotIn('f_deeper',txt)
-  self.assertIn('assign o_data=',txt)
-  self.assertIn('wire w_wr',txt)
+ def test_source_preserved_without_ad_hoc_preprocessing(self):
+  txt=u.validate_upstream_rtl(FIXTURE)
+  self.assertEqual(txt,FIXTURE)
+  self.assertIn('`ifdef FORMAL',txt)
+  self.assertNotIn('wire w_wr',txt)  # old benchmark failed here for no reason
  def test_mutation(self):
-  txt=u.mutate(u.preprocess_formal_disabled(FIXTURE))
-  self.assertIn('w_wr = i_wr',txt)
+  txt=u.mutate(u.validate_upstream_rtl(FIXTURE))
+  self.assertIn("assign o_full = 1'b0; // INTENT2PROOF INJECTED",txt)
+  self.assertNotIn('wire w_wr',txt)
   with self.assertRaises(ValueError):u.mutate(txt)
+  with self.assertRaises(ValueError):u.mutate('module sfifo; endmodule')
+ def test_sby_reads_original_in_synthesis_mode(self):
+  with tempfile.TemporaryDirectory() as td:
+   p=Path(td)
+   for kind in ('full','coi','contract','mutant','cover'):
+    cfg=u.sby_config(kind,'config',p/'bench.v',p/'sfifo.v',p,30,'abc pdr')
+    t=cfg.read_text()
+    self.assertIn('[script]\nread_verilog -sv sfifo.v\n',t)
+    self.assertIn('read_verilog -formal -sv bench.v\n',t)
+    self.assertNotIn('read_verilog -formal -sv sfifo.v',t)
+    self.assertEqual(t.count('read_verilog -formal -sv ref.v'),1 if kind=='contract' else 0)
  def test_generated_wrappers(self):
   for kind in ['full','coi','contract','mutant','cover']:
    t=u.wrapper(kind,3,16)
@@ -71,12 +84,13 @@ class TestGenerator(unittest.TestCase):
    # SBY [files] aliases must supply the names used in [script].
    for cfg in work.glob('*.sby'):
     body=cfg.read_text()
-    self.assertIn('read -formal -sv sfifo.v bench.v',body)
+    self.assertIn('read_verilog -sv sfifo.v\nread_verilog -formal -sv bench.v',body)
     self.assertIn('[files]\nsfifo.v ',body)
     self.assertIn('\nbench.v ',body)
     self.assertTrue((work/'source_synthesis_view.v').exists())
+    self.assertEqual((work/'source_synthesis_view.v').read_bytes(), (repo/u.RTL).read_bytes())
     if cfg.stem.endswith('_contract'):
-     self.assertIn('read -formal -sv sfifo.v bench.v ref.v',body)
+     self.assertIn('read_verilog -formal -sv ref.v',body)
      self.assertIn('\nref.v ',body)
     else:
      self.assertNotIn('\nref.v ',body)
@@ -84,7 +98,7 @@ class TestGenerator(unittest.TestCase):
    self.assertEqual(len(rows),15)
    self.assertTrue(all(r['status']=='NOT_RUN' for r in rows))
    self.assertEqual(len(json.loads((work/'manifest.json').read_text())['repository_commit_sha']),40)
-   self.assertEqual(sum('INTENT2PROOF' in (work/'source_mutant.v').read_text() for _ in [1]),1)
+   self.assertIn('INTENT2PROOF', (work/'source_mutant.v').read_text())
    # Dirty upstream source must block unsupported commit-based provenance.
    (repo/u.RTL).write_text(FIXTURE+'\n// dirty\n')
    dirty=subprocess.run([sys.executable,str(ROOT/'upstream_benchmark.py'),'--repo-path',str(repo),'--work',str(p/'dirty'),'--offline','--only-prepare'],capture_output=True,text=True)
